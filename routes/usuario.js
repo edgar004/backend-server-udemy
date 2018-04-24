@@ -1,6 +1,6 @@
 var express= require('express')
 var app=express()
-var usuarioShema = require('./../models/usuario')
+var usuarioShema = require('../models/usuario')
 //Libreria para encriptar la clave
 var bcrypt =require('bcryptjs')
 

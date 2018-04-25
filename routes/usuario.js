@@ -1,9 +1,11 @@
 var express= require('express')
 var app=express()
 var usuarioShema = require('../models/usuario')
+var jwt=require('jsonwebtoken')
+var SEED=require('../config/config').SEED
 //Libreria para encriptar la clave
 var bcrypt =require('bcryptjs')
-
+var mdautenticacion=require('../middlewares/autenticacion')
 
 //GeT a la raiz de usuario
 app.get('/',(req,res,next)=>{
@@ -27,9 +29,10 @@ usuarioShema.find({},'nombre email img role').exec(
 
 });
 
+
 	//crear usuario
 
-	app.post('/',(req,res)=>{
+	app.post('/', mdautenticacion.verificaToken  ,(req,res)=>{
 		var body=req.body
 		var usuario = new usuarioShema({
 		nombre:body.nombre,
@@ -51,10 +54,10 @@ usuarioShema.find({},'nombre email img role').exec(
 				})
 
 			}
-
 			res.status(201).json({
 			ok:true,
-			body:usuarioGuardado
+			usuario:usuarioGuardado,
+			usuarioToken:req.usuarioToken
 			})
 
 		
@@ -65,7 +68,7 @@ usuarioShema.find({},'nombre email img role').exec(
 	})
 
 //Actualizar usuario 
-app.put('/:id',(req,res)=>{
+app.put('/:id', mdautenticacion.verificaToken  ,(req,res)=>{
 let body = req.body
 	var id=req.params.id
 	usuarioShema.findById(id, (err,usuario)=>{
@@ -114,7 +117,7 @@ let body = req.body
 })
 
 //Eliminar usuario
-app.delete('/:id',(req,res)=>{
+app.delete('/:id', mdautenticacion.verificaToken  ,(req,res)=>{
 	var id=req.params.id
 
 	usuarioShema.findByIdAndRemove(id,(err,usuarioBorrado)=>{

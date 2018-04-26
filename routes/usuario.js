@@ -2,14 +2,20 @@ var express= require('express')
 var app=express()
 var usuarioShema = require('../models/usuario')
 var jwt=require('jsonwebtoken')
-var SEED=require('../config/config').SEED
+
 //Libreria para encriptar la clave
 var bcrypt =require('bcryptjs')
 var mdautenticacion=require('../middlewares/autenticacion')
 
 //GeT a la raiz de usuario
 app.get('/',(req,res,next)=>{
-usuarioShema.find({},'nombre email img role').exec(
+	let desde=req.query.desde || 0
+	desde=Number(desde)
+
+usuarioShema.find({},'nombre email img role')
+	.skip(desde)
+	.limit(5)
+	.exec(
 
 	(err,resUsuarios)=>{
 	
@@ -20,11 +26,14 @@ usuarioShema.find({},'nombre email img role').exec(
 		errors:err
 	})
 	}
-
-	res.status(200).json({
+	usuarioShema.count({},(err,conteo)=>{
+		res.status(200).json({
 		ok:true,
-		usuario:resUsuarios
+		usuario:resUsuarios,
+		total:conteo
 	})
+	})
+	
 })
 
 });

@@ -41,7 +41,7 @@ usuarioShema.find({},'nombre email img role')
 
 	//crear usuario
 
-	app.post('/', mdautenticacion.verificaToken  ,(req,res)=>{
+	app.post('/',(req,res)=>{
 		var body=req.body
 		var usuario = new usuarioShema({
 		nombre:body.nombre,
